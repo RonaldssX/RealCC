@@ -1,9 +1,9 @@
-Package: com.jakeashacks.realcc
-Name: RealCC
+Package: com.ronaldss.realccxs
+Name: RealCCXS
 Depends: mobilesubstrate
-Version: 0.0.4
+Version: 1.0
 Architecture: iphoneos-arm
-Description: Actually disable WiFI and Bluetooth from CC in iOS 11.
-Maintainer: Jake James
-Author: Jake James
+Description: Actually disable WiFI and Bluetooth from CC in iOS 11 and 12.
+Maintainer: Ronaldss
+Author: Ronaldss
 Section: Tweaks
