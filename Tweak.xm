@@ -2,6 +2,10 @@
 @property (nonatomic, copy, readwrite) NSString *title;
 @end
 
+@interface CCUILabeledRoundButtonViewController
+
+@end
+
 @interface SBWiFiManager
 -(id)sharedInstance;
 -(void)setWiFiEnabled:(BOOL)enabled;
@@ -24,33 +28,34 @@ static BOOL BTenabbled;
 %hook CCUILabeledRoundButton
 -(void)buttonTapped:(id)arg1 {
 
-%orig;
 
-if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_WIFI_NAME" value:@"CONTROL_CENTER_STATUS_WIFI_NAME" table:@"Localizable"]] || [self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_WLAN_NAME" value:@"CONTROL_CENTER_STATUS_WLAN_NAME" table:@"Localizable"]]) {
-SBWiFiManager *wiFiManager = (SBWiFiManager *)[%c(SBWiFiManager) sharedInstance];
-    BOOL enabled = [wiFiManager wiFiEnabled];
+if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_WIFI_NAME" value:@"CONTROL_CENTER_STATUS_WIFI_NAME" table:@"Localizable"]]) {
+    
+    SBWiFiManager *wiFiManager = (SBWiFiManager *)[%c(SBWiFiManager) sharedInstance];
 
-    if(enabled) {
-        [wiFiManager setWiFiEnabled:NO];
-    }
+    [wiFiManager setWiFiEnabled: ![wiFiManager wiFiEnabled]];
+    
+    return;
+   
 }
 
 if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_BLUETOOTH_NAME" value:@"CONTROL_CENTER_STATUS_BLUETOOTH_NAME" table:@"Localizable"]]) {
+    
     BluetoothManager *btoothManager = (BluetoothManager *)[%c(BluetoothManager) sharedInstance];
-    BOOL enabled = [btoothManager enabled];
+    
+    BOOL inverseEnabled = ![btoothManager enabled];
+    
+    [btoothManager setEnabled: inverseEnabled];
+    [btoothManager setPowered: inverseEnabled];
 
-    if(enabled) {
-        [btoothManager setEnabled:NO];
-        [btoothManager setPowered:NO];
-
-        BTenabbled = !enabled ;
-    }
-
-    if(!enabled) BTenabbled = YES;
+    BTenabbled = inverseEnabled;
+    
   }
+    
 }
 
 %end
+
 
 %hook BluetoothManager
 
@@ -68,3 +73,4 @@ if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/Cont
     return %orig;
 }
 %end
+
