@@ -2,4 +2,4 @@
 Actually disable wifi & bluetooth from CC in iOS >= 11
 
 A compiled version can be found at my repo:
-ronaldssx.github.io/Repo
+https://ronaldssx.github.io/Repo
