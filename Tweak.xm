@@ -1,9 +1,8 @@
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 @interface CCUILabeledRoundButton
 @property (nonatomic, copy, readwrite) NSString *title;
-@end
-
-@interface CCUILabeledRoundButtonViewController
-
 @end
 
 @interface SBWiFiManager
@@ -21,56 +20,58 @@
 -(bool)powered;
 
 @end
+ 
 
 static BOOL BTenabbled;
 
 
 %hook CCUILabeledRoundButton
--(void)buttonTapped:(id)arg1 {
+
+  -(void)buttonTapped:(id)arg1 {
 
 
-if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_WIFI_NAME" value:@"CONTROL_CENTER_STATUS_WIFI_NAME" table:@"Localizable"]]) {
+    if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_WIFI_NAME" value:@"CONTROL_CENTER_STATUS_WIFI_NAME" table:@"Localizable"]]) {
     
-    SBWiFiManager *wiFiManager = (SBWiFiManager *)[%c(SBWiFiManager) sharedInstance];
+     SBWiFiManager *wiFiManager = (SBWiFiManager *)[%c(SBWiFiManager) sharedInstance];
 
-    [wiFiManager setWiFiEnabled: ![wiFiManager wiFiEnabled]];
+     [wiFiManager setWiFiEnabled: ![wiFiManager wiFiEnabled]];
     
     return;
    
-}
+    }
 
-if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_BLUETOOTH_NAME" value:@"CONTROL_CENTER_STATUS_BLUETOOTH_NAME" table:@"Localizable"]]) {
+    if ([self.title isEqualToString:[[NSBundle bundleWithPath:@"/System/Library/ControlCenter/Bundles/ConnectivityModule.bundle"] localizedStringForKey:@"CONTROL_CENTER_STATUS_BLUETOOTH_NAME" value:@"CONTROL_CENTER_STATUS_BLUETOOTH_NAME" table:@"Localizable"]]) {
     
-    BluetoothManager *btoothManager = (BluetoothManager *)[%c(BluetoothManager) sharedInstance];
+     BluetoothManager *btoothManager = (BluetoothManager *)[%c(BluetoothManager) sharedInstance];
     
-    BOOL inverseEnabled = ![btoothManager enabled];
+     BOOL inverseEnabled = ![btoothManager enabled];
     
-    [btoothManager setEnabled: inverseEnabled];
-    [btoothManager setPowered: inverseEnabled];
+     [btoothManager setEnabled: inverseEnabled];
+     [btoothManager setPowered: inverseEnabled];
 
-    BTenabbled = inverseEnabled;
+     BTenabbled = inverseEnabled;
     
-  }
+    }
     
 }
 
 %end
 
-
 %hook BluetoothManager
 
+    -(BOOL)setEnabled:(BOOL)arg1 {
+     return %orig(BTenabbled);
+    }
 
-- (BOOL)setEnabled:(BOOL)arg1 {
-   return %orig(BTenabbled);
-}
-
-- (BOOL)setPowered:(BOOL)arg1{
+    -(BOOL)setPowered:(BOOL)arg1 {
     return %orig(BTenabbled);
-}
+    }
 
--(BOOL)enabled {
+    -(BOOL)enabled {
     BTenabbled = !%orig;
     return %orig;
-}
+        
+    }
+
 %end
 

@@ -3,7 +3,7 @@ Name: RealCCXS
 Depends: mobilesubstrate
 Version: 1.0
 Architecture: iphoneos-arm
-Description: Actually disable WiFI and Bluetooth from CC in iOS 11 and 12.
+Description: Actually disable WiFI and Bluetooth from CC in iOS >= 11.
 Maintainer: Ronaldss
 Author: Ronaldss
 Section: Tweaks
